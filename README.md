@@ -14,7 +14,7 @@ _Remark: all the following command should be run at the root of the project_
 
 ## Modify the code
 ### With Docker
-* Clone the git repo on your computer
+* Fork the repo by clicking on the fork button and then [clone your git repo on your computer](https://help.github.com/articles/cloning-a-repository/)
 * Modify the code as desired
 * Build the new Docker image: `docker build -f Dockerfile -t $USERNAME/inf552 .`
 * Run your image: `docker run -p 8080:80 $USERNAME/inf552`
