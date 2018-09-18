@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>INF552 - Exercice 1</title>
+        <!-- https://d3js.org/ -->
+        <script type="text/javascript" src="js/d3.v5.min.js"></script>
+        <script type="text/javascript" src="js/ex01.js"></script>
+        <style>
+            svg {
+                display: block;
+                border: 1px solid #444;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .footer {
+                font-family: "Trebuchet MS", Helvetica, sans-serif;
+                font-size: 12px;
+                padding: 6px;
+                text-align: center;
+                color: grey;
+            }
+
+            form {
+                text-align: center;
+                margin-bottom: 12px;
+            }
+        </style>
+    </head>
+
+    <body onload="createViz()">
+        <div id="main">
+            <div class="header">
+                <form>
+                  <input type="text" name="countField" value="10" id="countTf"
+                         onkeydown="handleKeyEvent(event);"/>
+                  <select id="searchType" name="searchFor">
+                    <option value="color">Color</option>
+                    <option value="shape">Shape</option>
+                    <option value="colorANDshape">Color &amp; Shape</option>
+                  </select>
+                  <input type="button" value="Set" onclick="set();" id="setBt"/>
+                </form>
+            </div>
+        </div>
+    </body>
+
+</html>
