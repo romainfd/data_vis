@@ -3,7 +3,13 @@ var ctx = {
     w: 720,
     h: 720,
     DM: {RV:"Radial Velocity", PT: "Primary Transit", ML: "Microlensing"},
-    POINT_SIZE: 10,
+    POINT_SIZE: 50,
+};
+
+var initGenerators = function(size) {
+    ctx.crossGenerator = d3.symbol().type(d3.symbolCross).size(size);
+    ctx.triangleGenerator = d3.symbol().type(d3.symbolTriangle).size(size);
+    ctx.circleGenerator = d3.symbol().type(d3.symbolCircle).size(size);
 };
 
 var initSVGcanvas = function(planetData){
@@ -18,10 +24,22 @@ var initSVGcanvas = function(planetData){
             if (d.star_mass > 0){return parseFloat(d.star_mass);}
             else {return 0;}
         });
+    var maxDate = d3.max(planetData,
+        function(d){
+            return parseFloat(d.discovered);
+        });
+    var minDate = d3.min(planetData,
+        function(d){
+            if (d.discovered > 0){return parseFloat(d.discovered);}
+            else {return maxDate;}
+        });
     ctx.xScale = d3.scaleLinear().domain([0, maxStarMass])
         .range([60, ctx.w-20]);
     ctx.yScale = d3.scaleLinear().domain([0, maxMass])
         .range([ctx.h-60, 20]);
+    ctx.colorScale = d3.scaleLinear()
+        .domain ([minDate, maxDate])
+        .range (['#89CFEF', "#000080"]);
     // 1 Msun & 1 MJup indicators
     d3.select("#bkgG")
         .append("line")
@@ -71,15 +89,30 @@ var initSVGcanvas = function(planetData){
         .text("Mass (Mjup)");
 };
 
-var populateSVGcanvas = function(planetData){
-    d3.select("svg").selectAll("circle")
-        .data(planetData)
+var populateSVGcanvas = function(planetData) {
+    initGenerators(ctx.POINT_SIZE);
+    d3.select("svg").selectAll("path")
+        // we clean the data before displaying it
+        .data(planetData.filter(function(d) { return d['detection_type'] != "" && d['mass'] > 0 && d['star_mass'] > 0 && d['discovered'] > 0; }))
         .enter()
-        .append("circle")
-        .attr("class", "foo")
-        .attr("cx", function(d) { return d['mass']; })
-        .attr("cy", function(d) { return d['star_mass']; })
-        .attr("r", ctx.POINT_SIZE)
+        .append("path")
+        // the shape depends on the detyection method used to discover the planet
+        .attr("d", function(d) {
+            switch (d['detection_type']) {
+                case "Radial Velocity":
+                    return ctx.circleGenerator();
+                case "Imaging":
+                    return ctx.crossGenerator();
+                case "Astrometry":
+                    return ctx.triangleGenerator();
+            }
+        })
+        // the position depends on the (mass, star_mass)
+        .attr("transform", function(d) { return "translate("+ctx.xScale(d['star_mass'])+","+ctx.yScale(d['mass'])+")"; })
+        // the color depends on the date of discovery
+        .style("stroke", function (d) {
+                return ctx.colorScale(d['discovered'])
+            })
 };
 
 var createViz = function(){
