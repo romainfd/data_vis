@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>INF552 - Exercice 3</title>
+        <script src="js/vega.js"></script>
+        <script src="js/vega-lite.js"></script>
+        <script src="js/vega-embed.js"></script>
+        <script src="js/ex03.js"></script>
+        <style>
+#rightCol {
+    float:right;
+    font-family: sans-serif;
+    border-left: 1px solid #AAA;
+    padding-left: 1em;
+}
+
+#discOverTime{
+    border-top: 1px solid #AAA;
+    padding-top: 1em;
+}
+
+#massHist {
+    padding-bottom: .5em;
+}
+
+.formLb {
+    font-family:sans-serif;
+    font-size:70%;
+    padding-left: 5em;
+}
+        </style>
+    </head>
+
+    <body onload="createViz();">
+        <div id="rightCol">
+            <div id="massHist"></div>
+            <div id="discOverTime"></div>
+        </div>
+        <!-- div that will be populated with the visualization -->
+        <div>
+            <input type="button" value="log" onclick="setScale();" id="scaleBt"/>
+            <div id="masses"></div>
+            <div>
+                <form>
+                    <input type="text" name="sampleField" value="*" id="sampleTf"
+                   onkeydown="handleKeyEvent(event);"/>
+                   <input type="button" value="Sample" onclick="setSample();" id="sampleBt"/>
+                   <span class="formLb">Scale:</span>
+                   <select id="scaleSel" onchange="setScale();">
+                       <option value="linear">Linear</option>
+                       <option value="log">Log</option>
+                   </select>
+                </form>
+            </div>
+      </div>
+    </body>
+
+</html>
