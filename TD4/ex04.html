@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>INF552 - Exercice 4</title>
+        <!-- https://d3js.org/ -->
+        <script type="text/javascript" src="js/d3.v5.min.js"></script>
+        <script type="text/javascript" src="js/ex04.js"></script>
+        <style>
+svg {
+    display: block;
+    border: 1px solid #444;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.links line {
+  stroke: #999;
+}
+
+.nodes circle {
+  stroke: #333;
+  stroke-width: 1px;
+}
+        </style>
+    </head>
+
+    <body onload="createViz()">
+        <div id="main">
+        </div>
+    <div style="text-align: center;">
+        <p style="font-size: 18px; font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;">
+            Graph Visualization: force directed layout (simulating physical forces of repulsion between nodes and attraction thanks to links).<br/>
+            Illustration of the method on <a href="flights.json">airports</a> and <a href="airports.json">flights</a> data from the US using <a href="https://github.com/d3/d3-force">d3-force</a>.<br/>
+            The connections with more than 3 million passengers a year are displayed and used to compute the layout.<br/>
+            The color matches the time zone of the airport.
+        </p>
+    </div>
+    </body>
+
+</html>
