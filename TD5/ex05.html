@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>INF552 - Exercice 5</title>
+        <!-- https://d3js.org/ -->
+        <script type="text/javascript" src="js/d3.v5.min.js"></script>
+        <!-- https://github.com/bgrins/TinyColor -->
+        <script type="text/javascript" src="js/tinycolor.js"></script>
+        <script type="text/javascript" src="js/ex05.js"></script>
+        <style>
+svg {
+    display: block;
+    font: 10px sans-serif;
+    border: 1px solid #444;
+    margin-left: auto;
+    margin-right: auto;
+}
+        </style>
+    </head>
+
+    <body onload="createViz()">
+        <div id="main">
+        </div>
+        <div style="text-align: center;">
+            <p style="font-size: 18px; font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;">
+                Treemap Visualization: Treemap display of the general government expenditure breakdown by
+                their main socio-economic function <a href="cofog.csv">(according to the Classification of the Functions of Government - COFOG).</a><br/>
+                The color matches the parent categories (hover the side of the big rectangles to know the name of the category).<br/>
+                The size matches the value spent in the category.
+            </p>
+        </div>
+    </body>
+
+</html>
