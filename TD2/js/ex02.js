@@ -128,5 +128,5 @@ var loadData = function(){
     d3.csv("exoplanet.eu_catalog.csv").then(function(planets){
         initSVGcanvas(planets);
         populateSVGcanvas(planets);
-    }).catch(function(error){console.log(error)});
+    }).catch(function(error){ console.log(error); });
 };
