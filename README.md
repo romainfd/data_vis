@@ -5,7 +5,7 @@ INF552 course @ Ecole polytechnique about Data Visualisation
 _Remark: all the following command should be run at the root of the project_
 ## Ready to use
 ### With Docker
-* Run my image using `docker run -p 8080:80 romainfd/inf552`
+* Run my image using `docker run -p 8080:80 romainfd/inf552` _(no need to clone the repo before)_
 * Then go to your localhost at http://localhost:8080 and choose the exercise you want to see
 
 ### With a python server
