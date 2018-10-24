@@ -1,5 +1,6 @@
-# data_vis
-INF552 course @ Ecole polytechnique about Data Visualisation
+# Data Visualisation
+INF552 course @ Ecole polytechnique about Data Visualisation<br/>
+--> The results are directly available [here](https://romainfd.github.io/data_vis/). <--
 
 # Use the code
 _Remark: all the following command should be run at the root of the project_
