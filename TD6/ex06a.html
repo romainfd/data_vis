@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>INF552 - Exercice 6a</title>
+        <script src="https://cdn.jsdelivr.net/npm/vega@4.3.0"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.0.0-rc8"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vega-embed@3.20.0"></script>
+        <script src="js/ex06a.js"></script>
+        <style>
+        </style>
+    </head>
+
+    <body onload="createPlot();">
+        <div id="ts"></div>
+        <div style="text-align: center;">
+            <p style="font-size: 18px; font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;">
+                Time series: Line plot visualization of the <a href="https://en.wikipedia.org/wiki/Case–Shiller_index">Case Shriller index</a> of several US cities based on this <a href="house_prices.json">data</a>.<br/>
+                We can notice the common point (2000, 100) which is the creation of the index. This will be used for the diverging scale in the <a href="ex06b.html">color map</a>.
+            </p>
+        </div>
+    </body>
+
+</html>
