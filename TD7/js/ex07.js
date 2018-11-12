@@ -11,6 +11,7 @@ var ctx = {
     timeAxisHeight: 20,
     linePlot: false,
     valueExtentOverAllSeries: [0,0],
+    linesNb: null,
 };
 
 var transformData = function(data){
@@ -51,6 +52,10 @@ var transformData = function(data){
     }
     cities.sort((a,b) => d3.ascending(a.dtw, b.dtw));
     res.series.push.apply(res.series, cities);
+
+    ctx.linesNb = res.series.length;
+
+    console.log(res);
     return res;
 };
 
@@ -131,11 +136,145 @@ var createMaps = function(data, svgEl){
 };
 
 var transitionToLinePlots = function(){
-    //...
+    // 1. Remove the legend
+    var removeLegend = function(callback) {
+        d3.select("#colorLegend")
+            .transition()
+            .duration(ctx.STAGE_DURATION)
+            .attr("opacity", 0)
+            .on("end", callback);
+    };
+
+    // 2. Translate all the lines to fill the entire space
+    var translatePlots = function(callback) {
+        var linesLeft = 0;
+        d3.selectAll(".plot")
+            .transition()
+            .duration(ctx.STAGE_DURATION)
+            .attr("transform", (d, i) => ("translate(0, " + (ctx.spacePerLine * i) + ")"))
+            .on("start", () => (linesLeft++))
+            // if last line => call callback
+            .on("end", function() { return linesLeft == 1 ? callback() : linesLeft--; });
+        d3.select("#timeAxis")
+            .transition()
+            .attr("transform",
+                "translate(0,"+(ctx.h-ctx.timeAxisHeight)+")")
+    };
+
+    // 3. Make all strips 1px tall
+    var onePixelTall = function(callback) {
+        var pixelsLeft = 0;
+        d3.selectAll(".plot")
+            .selectAll("line")
+            .transition()
+            .duration(ctx.STAGE_DURATION)
+            .attr("y1", ctx.vmargin)
+            .attr("y2", 1 + ctx.vmargin)
+            .on("start", () => (pixelsLeft++))
+             // if last line => call callback
+            .on("end", function() { return pixelsLeft == 1 ? callback() : pixelsLeft--; });
+    };
+
+    // 4. Draw the lines
+    var plotLines = function(callback) {
+        ctx.ordinate = d3.scaleLinear()
+            .domain([ctx.valueExtentOverAllSeries[0], ctx.valueExtentOverAllSeries[1]])
+            .range([0, ctx.spacePerLine - 1]);
+        var pixelsLeft = 0;
+        d3.selectAll(".plot")
+            .selectAll("line")
+            .transition()
+            .duration(ctx.STAGE_DURATION)
+            .delay((d, i) => (ctx.STAGE_DURATION / 100 * i))  // 10ms delay for each
+            // .attr("x1", (d,j) => (j))  // USELESS
+            .attr("y1", function(d) { return ctx.spacePerLine - ctx.ordinate(d);})
+            // ATTENTION: y increases downwards !! => ctx.spacePerLine - ...
+            // .attr("x2", (d,j) => (j + 1))
+            .attr("y2", function(d) {return ctx.spacePerLine - (ctx.ordinate(d) + 1); })
+            .on("start", () => (pixelsLeft++))
+            // if last line => call callback
+            .on("end", function() { return pixelsLeft == 1 ? callback() : pixelsLeft--; });
+    };
+
+    // 5. Change pixels color to gray
+    var toGray = function(callback) {
+        d3.selectAll(".plot")
+            .selectAll("line")
+            .transition()
+            .duration(ctx.STAGE_DURATION)
+            .attr("stroke", (d) => ((d == null) ? "white" : "darkgray"));
+    };
+
+    ctx.spacePerLine = (ctx.h - ctx.timeAxisHeight) / ctx.linesNb;
+    removeLegend(function() {
+        translatePlots(function() {
+            onePixelTall(function() {
+                plotLines(function() {
+                    toGray(function() {
+                        console.log("Over");
+                    });
+                });
+            });
+        });
+    });
 };
 
 var transitionToColorStrips = function(){
-    //...
+    // 1. Move back the display of the lines to colormap
+    var changeDisplay = function(callback) {
+        var pixelsLeft = 0;
+        d3.selectAll(".plot")
+            .selectAll("line")
+            // 1.a we change the color
+            .transition()
+            .duration(ctx.STAGE_DURATION)
+            .delay((d, i) => (ctx.STAGE_DURATION / 100 * i))  // 10ms delay for each
+            .attr("stroke", (d) => ((d == null) ? "#AAA" : ctx.color(d)))
+            // 1.b we format the line, back to the colormap
+            .transition()
+            .delay(ctx.STAGE_DURATION)
+            .duration(ctx.STAGE_DURATION)
+            // for each pixel we wait for stage_dur / 2 after the color change to move
+            // ATTENTION: Here we are for each pixel when we chain transition !!
+            // there is already the different delay offset for each !!
+            .attr("x1", (d,j) => (j))
+            .attr("y1", ctx.vmargin)
+            .attr("x2", (d,j) => (j))
+            .attr("y2", ctx.BAND_H-ctx.vmargin)
+            .on("start", () => ( pixelsLeft++ ))
+            .on("end", () => (pixelsLeft == 1 ? callback() : pixelsLeft-- ));
+    };
+
+    //2. We move the lines back to the good position (as well as the xaxis
+    var moveBack = function(callback) {
+        d3.select("#timeAxis")
+            .transition()
+            .duration(ctx.STAGE_DURATION)
+            .attr("transform",
+                "translate(" + ctx.hmargin + "," + (ctx.totalStripHeight - ctx.timeAxisHeight) + ")");
+        var linesLeft = 0;
+        d3.selectAll(".plot")
+            .transition()
+            .duration(ctx.STAGE_DURATION)
+            // move them back to the right place
+            .attr("transform", (d, i) => ("translate(" + ctx.hmargin + "," + (i * ctx.BAND_H) + ")"))
+            .on("start", () => ( linesLeft++ ))
+            .on("end", () => (linesLeft == 1 ? callback() : linesLeft--));
+    };
+
+    // 3. Put back the legend
+    var addLegendBack = function() {
+        d3.select("#colorLegend")
+            .transition()
+            .duration(ctx.STAGE_DURATION)
+            .attr("opacity", 1);
+    };
+
+    changeDisplay(function() {
+        moveBack(function() {
+            addLegendBack();
+        })
+    });
 };
 
 var toggleVis = function(){
@@ -156,7 +295,7 @@ var createViz = function(){
         var ts = d3.event.timeStamp;
         if ((ts-ctx.lastMousePress) < ctx.DOUBLE_CLICK_THRESHOLD){toggleVis();}
         ctx.lastMousePress = ts;
-    })
+    });
     loadData(svgEl);
 };
 
