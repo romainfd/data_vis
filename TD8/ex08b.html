@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>INF552 - Exercice 8b</title>
+        <script type="text/javascript" src="js/d3.v5.min.js"></script>
+        <script type="text/javascript" src="js/d3-geo-projection.v2.min.js"></script>
+        <script type="text/javascript" src="js/ex08b.js"></script>
+<style type="text/css">
+.country {
+  fill: white;
+  stroke: #CCC;
+  vector-effect: non-scaling-stroke;
+}
+
+.river {
+  fill: none;
+  stroke: #4e76b4;
+  vector-effect: non-scaling-stroke;
+}
+
+.lake {
+  fill: #4e76b4;
+  stroke: none;
+}
+
+svg {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sphereBounds {
+    fill: #4e76b4;
+    stroke: #333;
+    stroke-width: 1px;
+}
+</style>
+    </head>
+
+    <body onload="createViz()">
+        <div id="main">
+        </div>
+    </body>
+
+</html>
