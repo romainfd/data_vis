@@ -9,7 +9,7 @@ var createPlot = function(){
             // THE MAP
             {
                 "data": {
-                    "url": "us-10m.json",
+                    "url": "data/us-10m.json",
                     "format": {
                         "type": "topojson",
                         "feature": "states"
@@ -25,12 +25,12 @@ var createPlot = function(){
             },
             {
                 "data": {
-                    "url": "airports.json"
+                    "url": "data/airports.json"
                 },
                 "transform": [{
                     "lookup": "state",  // key in our data
                     "from": {
-                        "data": {"url": "states_tz.csv"},  // JOIN WITH
+                        "data": {"url": "data/states_tz.csv"},  // JOIN WITH
                         "key": "State",  // ON the foreign key
                         "fields": ["TimeZone"]  // SELECT what
                     }

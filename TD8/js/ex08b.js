@@ -1,4 +1,6 @@
 var ctx = {
+    current_projection: "ER",  // ER or IM
+    dataInput: "110", // 110 or 50 (more precise)
     w: 960,
     h: 484,
     undefinedColor: "#AAA",
@@ -9,6 +11,10 @@ var ctx = {
     lakes: [],
     countries: [],
 };
+
+ctx.color = d3.scaleLinear()
+    .domain([0, 100])
+    .range(["#ff4400", "white"]);
 
 const PROJECTIONS = {
     ER: d3.geoEquirectangular().scale(ctx.h / Math.PI),
@@ -27,11 +33,17 @@ const PROJECTIONS = {
          .precision(.1),
 };
 
+function getCurrentProjection() {
+    return PROJECTIONS[ctx.current_projection];
+}
+
 var makeMap = function(svgEl){
     ctx.mapG = svgEl.append("g")
                     .attr("id", "map");
     // bind and draw geographical features to <path> elements
+    // draw countries
     addCountries();
+    // draw all water bodies
     fadeWaterIn();
     // panning and zooming
     svgEl.append("rect")
@@ -51,11 +63,27 @@ var makeMap = function(svgEl){
 };
 
 var addCountries = function(){
-    // ...
+    var geoPathGen = d3.geoPath()
+        .projection(getCurrentProjection());  // getCurrentProjection() to have consistent projection over everything
+
+    // bind countries to path
+    ctx.mapG
+        .selectAll("path")
+        .data(ctx.countries)
+        .enter()
+        .append("path")
+        .attr("class", "country")  // add class country
+        .attr("d", geoPathGen)   // knows how to draw based on the features data
+        // set display
+        .style("fill",  (d) => d['properties']['water_source'] == undefined ? "grey" : ctx.color(d['properties']['water_source']))
+        .attr("stroke", "#DDD")
+        .attr("clip-path", "url(#clip)");  // to clip display with projection
+        //.attr("stroke-width", "1.5px");
 };
 
 var fadeWaterIn = function(){
-    var path4proj = null;  // ...
+    var path4proj = d3.geoPath()
+        .projection(getCurrentProjection());  // getCurrentProjection() to have consistent projection over everything
     // clipping
     var defs = d3.select("svg").insert("defs", "#map");
     defs.append("path")
@@ -75,11 +103,47 @@ var fadeWaterIn = function(){
         .attr("class", "sphereBounds")
         .attr("xlink:href", "#sphere")
         .attr("opacity", 1);
+
+    // ADD RIVERS
+    ctx.mapG
+        .append("g")
+        .attr("id", "rivers")
+        .style("opacity", 1)
+        .selectAll("path")
+        .data(ctx.rivers)
+        .enter()
+        .append("path")
+        .attr("class", "river")  // add class river
+        .attr("d", path4proj)   // knows how to draw based on the features data
+        .attr("clip-path", "url(#clip)");  // to clip display with projection
+    // NOT FILL => it fills river lines poorly
+
+    // ADD LAKES
+    ctx.mapG
+        .append("g")
+        .attr("id", "lakes")
+        .style("opacity", 1)
+        .selectAll("path")
+        .data(ctx.lakes)
+        .enter()
+        .append("path")
+        .attr("class", "lake")  // add class lake
+        .attr("d", path4proj)   // knows how to draw based on the features data
+        .attr("clip-path", "url(#clip)");  // to clip display with projection
 };
 
 var fadeWaterOutBeforeProjSwitch = function(sourceProj, targetProj){
-    d3.select("g#rivers").remove();
-    d3.select("g#lakes").remove();
+
+    d3.select("g#rivers")
+        .transition()
+        .duration(2000)
+        .style("opacity", 0)
+        .remove();
+    d3.select("g#lakes")
+        .transition()
+        .duration(2000)
+        .style("opacity", 0)
+        .remove();
     d3.selectAll("defs").remove();
     d3.selectAll("use").remove();
     animateProjection(sourceProj, targetProj);
@@ -154,6 +218,33 @@ var createViz = function(){
 var loadData = function(svgEl){
     // ... load data, transform it, store it in ctx
     // ... then call makeMap(svgEl)
+    var countries = d3.json("data/ne_" + ctx.dataInput + "m_admin_0_countries.geojson");
+    var lakes = d3.json("data/ne_" + ctx.dataInput + "m_lakes.geojson");
+    var rivers = d3.json("data/ne_" + ctx.dataInput + "m_rivers_lake_centerlines.geojson");
+    var water = d3.csv("data/drinking_water.csv");
+    // 1. We collect all the data
+    Promise.all([countries, lakes, rivers, water]).then(function(dataIn) {
+        // 2. We format the data
+        ctx.countries = dataIn[0].features;
+        ctx.lakes = dataIn[1].features;
+        ctx.rivers = dataIn[2].features;
+
+        // To match the countries with the water data, we first format the water data to have fast access
+        var waterDict = {};
+        dataIn[3].forEach(function(elem) {
+            if (elem["Year"] == ctx.YEAR) { // this is the year we want
+                waterDict[elem["Code"]] = elem["ImprovedWaterSourcePC"];
+            }
+        });
+
+        // now we match with our countries => loop through and look for info in waterDict
+        ctx.countries.forEach(function(country) {
+           country["properties"]["water_source"] = waterDict[country["properties"]["iso_a3"]];  // could be undefined
+        });
+
+        // 3. We make the map
+        makeMap(svgEl);
+    }).catch(function(error){ console.log(error); });
 };
 
 var handleKeyEvent = function(e){
