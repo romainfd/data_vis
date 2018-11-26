@@ -168,6 +168,7 @@ var getData = function(callback) {
 getData(function() {
     drawPlanes();
     createPlots();
+    repeatingUpdate();  // launch the automatic update
 });
 
 
@@ -207,7 +208,6 @@ var drawPlanes = function() {
         .on("mouseover", function(d) {
             document.getElementById("info").innerText = "Plane callsign: " + d.callsign;
             bindPlotDisplay(d);
-            console.log(d);
         });
     // remove the old planes
     d3.select("g#planes")
