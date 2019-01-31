@@ -1,12 +1,12 @@
 # Data Visualisation
-INF552 course @ Ecole polytechnique about Data Visualisation<br/>
+Data Visualisation course @ Ecole polytechnique<br/>
 --> The results are directly available [here](https://romainfd.github.io/data_vis/). <--
 
 # Use the code
 _Remark: all the following command should be run at the root of the project_
 ## Ready to use
 ### With Docker
-* Run my image using `docker run -p 8080:80 romainfd/inf552` _(no need to clone the repo before)_
+* Run my image using `docker run -p 8080:80 romainfd/datavis` _(no need to clone the repo before)_
 * Then go to your localhost at http://localhost:8080 and choose the exercise you want to see
 
 ### With a python server
@@ -17,8 +17,8 @@ _Remark: all the following command should be run at the root of the project_
 ### With Docker
 * Fork the repo by clicking on the fork button and then [clone your git repo on your computer](https://help.github.com/articles/cloning-a-repository/)
 * Modify the code as desired
-* Build the new Docker image: `docker build -f Dockerfile -t $USERNAME/inf552 .`
-* Run your image: `docker run -p 8080:80 $USERNAME/inf552`
+* Build the new Docker image: `docker build -f Dockerfile -t $USERNAME/datavis .`
+* Run your image: `docker run -p 8080:80 $USERNAME/datavis`
 * Go to http://localhost:8080
 
 ### With Python
